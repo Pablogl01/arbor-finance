@@ -25,10 +25,9 @@ export class ProcessRecurringWorker {
         return { processedCount: totalProcessed };
     }
 
-    private shouldProcess(nextDueDate: string): boolean {
+    private shouldProcess(nextDueDate: Date): boolean {
         const today = new Date();
-        const dueDate = new Date(nextDueDate);
-        return dueDate <= today;
+        return nextDueDate <= today;
     }
 
     private async processItem(item: any): Promise<void> {
@@ -46,11 +45,11 @@ export class ProcessRecurringWorker {
 
         // 3. Update the recurring transaction record
         await this.accountRepo.updateRecurringTransaction(item.id, {
-            nextDueDate: nextDate.toISOString().split('T')[0]
+            nextDueDate: nextDate
         });
     }
 
-    private calculateNextDate(currentDate: string, frequency: string): Date {
+    private calculateNextDate(currentDate: Date, frequency: string): Date {
         const date = new Date(currentDate);
         switch (frequency) {
             case 'daily':
