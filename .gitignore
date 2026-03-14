@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# User sensitivity and local scripts
+*.pdf
+*.csv
+test_db.ts
+proxy.ts
+*_output.txt
+*.sql
