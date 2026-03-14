@@ -11,6 +11,7 @@ export async function GET(request: Request) {
     const CRON_SECRET = process.env.CRON_SECRET || 'dev_secret_only';
 
     if (secret !== CRON_SECRET) {
+        console.error(`Unauthorized cron attempt with secret: ${secret?.substring(0, 3)}...`);
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -24,9 +25,13 @@ export async function GET(request: Request) {
             .from('assets')
             .select('ticker');
 
-        if (assetsError) throw assetsError;
+        if (assetsError) {
+            console.error('Error fetching assets from DB:', assetsError);
+            throw assetsError;
+        }
 
         if (!assetsToUpdate || assetsToUpdate.length === 0) {
+            console.log('No assets found in database to update.');
             return NextResponse.json({ message: 'No assets in catalog to update' });
         }
 
@@ -34,7 +39,7 @@ export async function GET(request: Request) {
         const updatedAssets = [];
         const tickers = assetsToUpdate.map(a => a.ticker);
 
-        console.log(`Fetching quotes for ${tickers.length} assets...`);
+        console.log(`Fetching quotes for ${tickers.length} assets: ${tickers.join(', ')}`);
 
         // Fetch prices in parallel
         const quotes = await Promise.all(
@@ -47,13 +52,19 @@ export async function GET(request: Request) {
             )
         );
 
-        for (const quote of quotes) {
-            if (quote && quote.regularMarketPrice) {
+        for (let i = 0; i < quotes.length; i++) {
+            const quote = quotes[i];
+            const originalTicker = tickers[i];
+            
+            if (quote && (quote.regularMarketPrice !== undefined)) {
+                console.log(`Successfully fetched price for ${originalTicker}: ${quote.regularMarketPrice}`);
                 updatedAssets.push({
-                    ticker: quote.symbol,
+                    ticker: originalTicker, // IMPORTANT: Use original ticker to match DB key
                     current_price: quote.regularMarketPrice,
                     last_updated: new Date().toISOString()
                 });
+            } else {
+                console.warn(`Could not get price for ${originalTicker} - quote response was empty or invalid`);
             }
         }
 
@@ -64,7 +75,13 @@ export async function GET(request: Request) {
                 .from('assets')
                 .upsert(updatedAssets, { onConflict: 'ticker' });
 
-            if (upsertError) throw upsertError;
+            if (upsertError) {
+                console.error('Error during upsert to assets table:', upsertError);
+                throw upsertError;
+            }
+            console.log('Database updated successfully for assets.');
+        } else {
+            console.warn('No assets were updated (no valid quotes received).');
         }
 
         // 4. Recalculate balance_cache for all investment accounts
