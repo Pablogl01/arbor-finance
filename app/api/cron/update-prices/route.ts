@@ -43,37 +43,42 @@ export async function GET(request: Request) {
         console.log(`2. Found ${tickers.length} tickers to fetch:`, tickers);
 
         // Fetch prices in parallel
-        const quotes = await Promise.all(
+        const fetchResults = await Promise.all(
             tickers.map(async (ticker) => {
                 try {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const q = await (yahooFinance as any).quote(ticker);
-                    return { ticker, quote: q };
+                    return { ticker, quote: q, success: true };
                 } catch (e: any) {
                     console.error(`Error fetching quote for ticker "${ticker}":`, e.message);
-                    return { ticker, quote: null, error: e.message };
+                    return { ticker, quote: null, success: false, error: e.message };
                 }
             })
         );
 
         const updatedAssets = [];
-        for (const item of quotes) {
-            const { ticker, quote } = item;
-            if (quote && quote.regularMarketPrice !== undefined) {
-                console.log(`- Fetch OK: ${ticker} = ${quote.regularMarketPrice} ${quote.currency || ''}`);
+        const errors = [];
+        
+        for (const item of fetchResults) {
+            const { ticker, quote, success, error } = item;
+            if (success && quote && quote.regularMarketPrice !== undefined) {
+                console.log(`- Fetch OK: ${ticker} = ${quote.regularMarketPrice}`);
                 updatedAssets.push({
                     ticker: ticker,
                     current_price: quote.regularMarketPrice,
                     last_updated: new Date().toISOString()
                 });
             } else {
-                console.warn(`- Fetch FAILED: ${ticker} (Quote empty or price missing)`);
+                const reason = !success ? error : "Price field missing in response";
+                console.warn(`- Fetch FAILED: ${ticker} (${reason})`);
+                errors.push({ ticker, reason });
             }
         }
 
         console.log(`3. Preparing to update ${updatedAssets.length} assets in DB...`);
 
         // 3. Batch update assets table
+        let dbUpdateSuccess = false;
         if (updatedAssets.length > 0) {
             const { data, error: upsertError } = await supabase
                 .from('assets')
@@ -85,21 +90,17 @@ export async function GET(request: Request) {
                 throw upsertError;
             }
             console.log('SUCCESS: Asset prices updated. Records changed:', data?.length);
-        } else {
-            console.warn('SKIP: No valid quotes to update in the database.');
+            dbUpdateSuccess = true;
         }
 
         // 4. Recalculate balance_cache for all investment accounts
-        console.log('4. Recalculating account balances...');
+        // ... (rest of the calculation logic remains the same)
         const { data: investmentAccounts, error: accountsError } = await supabase
             .from('accounts')
             .select('id')
             .eq('type', 'investment');
 
-        if (accountsError) {
-            console.error('Error fetching accounts:', accountsError);
-            throw accountsError;
-        }
+        if (accountsError) throw accountsError;
 
         const accountUpdates = [];
         for (const account of investmentAccounts || []) {
@@ -111,42 +112,30 @@ export async function GET(request: Request) {
                 `)
                 .eq('account_id', account.id);
 
-            if (holdingsError) {
-                console.error(`Error fetching holdings for account ${account.id}:`, holdingsError);
-                continue;
+            if (!holdingsError) {
+                const newBalance = (holdings || []).reduce((acc, h) => {
+                    const holding = h as unknown as { quantity: number; assets: { current_price: number } | null };
+                    if (holding.assets && holding.assets.current_price) {
+                        return acc + (Number(holding.quantity) * Number(holding.assets.current_price));
+                    }
+                    return acc;
+                }, 0);
+
+                accountUpdates.push({ id: account.id, balance_cache: newBalance });
             }
-
-            const newBalance = (holdings || []).reduce((acc, h) => {
-                const holding = h as unknown as { quantity: number; assets: { current_price: number } | null };
-                if (holding.assets && holding.assets.current_price) {
-                    return acc + (Number(holding.quantity) * Number(holding.assets.current_price));
-                }
-                return acc;
-            }, 0);
-
-            accountUpdates.push({
-                id: account.id,
-                balance_cache: newBalance
-            });
         }
 
-        console.log(`5. Updating ${accountUpdates.length} account balances...`);
         for (const update of accountUpdates) {
-            const { error: accUpdateError } = await supabase
-                .from('accounts')
-                .update({ balance_cache: update.balance_cache })
-                .eq('id', update.id);
-            
-            if (accUpdateError) {
-                console.error(`Error updating account ${update.id}:`, accUpdateError);
-            }
+            await supabase.from('accounts').update({ balance_cache: update.balance_cache }).eq('id', update.id);
         }
 
-        console.log('--- Cron Execution Finished Successfully ---');
         return NextResponse.json({
             success: true,
+            totalTickers: tickers.length,
             updatedAssetsCount: updatedAssets.length,
-            updatedAccountsCount: accountUpdates.length
+            updatedAccountsCount: accountUpdates.length,
+            errors: errors.length > 0 ? errors : undefined,
+            dbUpdateExecuted: dbUpdateSuccess
         });
 
     } catch (err) {
