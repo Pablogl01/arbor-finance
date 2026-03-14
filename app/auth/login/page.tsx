@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, Fingerprint, Chrome, Asterisk } from 'lucide-react'
+import { Eye, EyeOff, Fingerprint, Asterisk } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')

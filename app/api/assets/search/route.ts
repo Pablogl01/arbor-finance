@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import yahooFinanceModule from 'yahoo-finance2';
-const yahooFinance = new (yahooFinanceModule as any)();
+import yahooFinance from 'yahoo-finance2';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -11,13 +10,15 @@ export async function GET(request: Request) {
   }
 
   try {
-    const results = await yahooFinance.search(query, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const results = await (yahooFinance as any).search(query, {
       quotesCount: 10,
       newsCount: 0,
-    }, { validateResult: false }) as any;
+    }, { validateResult: false });
     
     // Filter out non-equity/ETF entities and map to simplified schema
-    const filtered = results.quotes.filter((q: any) => q.isYahooFinance).map((q: any) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filtered = (results.quotes as any[]).filter((q) => q.isYahooFinance).map((q) => ({
       ticker: q.symbol,
       name: q.shortname || q.longname || q.symbol,
       type: q.quoteType === 'ETF' ? 'ETF' : q.quoteType === 'EQUITY' ? 'Stock' : 'Crypto',

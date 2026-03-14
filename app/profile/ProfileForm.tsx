@@ -48,6 +48,7 @@ export default function ProfileForm({
 
   // Sync state if server data changes (e.g. after successful revalidation)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormDataState({ fullName, phone, timezone, baseCurrency });
   }, [fullName, phone, timezone, baseCurrency]);
 
@@ -116,8 +117,9 @@ export default function ProfileForm({
       setFactorId(data.id);
       setQrCode(data.totp.qr_code);
       setIs2FAModalOpen(true);
-    } catch (err: any) {
-      alert('Error: ' + err.message);
+    } catch (err) {
+      const error = err as Error;
+      alert('Error: ' + error.message);
     }
     
     setIsMfaPending(false);

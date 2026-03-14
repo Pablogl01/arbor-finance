@@ -7,7 +7,7 @@ const accountRepo = new SupabaseAccountRepository();
 export function useAccounts() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchAccounts = useCallback(async (silent = false) => {
     try {
@@ -15,7 +15,7 @@ export function useAccounts() {
       const data = await accountRepo.getAccounts();
       setAccounts(data);
     } catch (err) {
-      setError(err);
+      setError(err as Error);
     } finally {
       if (!silent) setLoading(false);
     }

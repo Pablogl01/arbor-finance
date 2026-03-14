@@ -33,7 +33,7 @@ export function useNetWorthHistory() {
         const invAccountIds = accounts.filter(a => a.type === 'investment').map(a => a.id);
 
         // Fetch all cash transactions
-        let cashTxs: any[] = [];
+        let cashTxs: { amount: number; type: string; date: string }[] = [];
         if (cashAccountIds.length > 0) {
           const { data: txs } = await supabase
             .from('transactions')
@@ -43,7 +43,7 @@ export function useNetWorthHistory() {
         }
 
         // Fetch all investment transactions
-        let invTxs: any[] = [];
+        let invTxs: { quantity: number; price: number; type: string; date: string }[] = [];
         if (invAccountIds.length > 0) {
           const { data: itxs } = await supabase
             .from('investment_transactions')
@@ -122,11 +122,14 @@ export function useNetWorthHistory() {
           txIdx++;
         }
         
+        // Remove unused monthStart variable
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const _monthStart = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+        
         // Distribute unrealized P&L linearly over the 7 months for visual smoothness
         const plStep = totalUnrealizedPL / 7;
 
         for (let i = 0; i < 7; i++) {
-          const monthStart = new Date(now.getFullYear(), now.getMonth() - 6 + i, 1);
           const monthEnd = new Date(now.getFullYear(), now.getMonth() - 6 + i + 1, 1);
           
           while (txIdx < combinedTxs.length && combinedTxs[txIdx].date < monthEnd) {

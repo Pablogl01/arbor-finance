@@ -1,11 +1,8 @@
 import Header from '@/components/layout/Header';
-import { User, Shield, Landmark, Bell, Edit2, Lock, Settings as SettingsIcon, Link2, Check, RefreshCw, Trash2, Plus } from 'lucide-react';
+import { User, Shield, Landmark } from 'lucide-react';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import Image from 'next/image';
-import { revalidatePath } from 'next/cache';
 
-import { updateProfile } from './actions';
 import ProfileForm from './ProfileForm';
 
 export default async function ProfilePage() {

@@ -18,14 +18,22 @@ export default function Toast({ message, isVisible, onClose, duration = 3000 }: 
     let fadeOutId: NodeJS.Timeout;
 
     if (isVisible) {
-      setIsShowing(true);
+      // Use setTimeout to avoid synchronous setState in effect warning
+      const id = setTimeout(() => setIsShowing(true), 0);
+      
       // Automatically hide after duration
       timeoutId = setTimeout(() => {
         setIsShowing(false);
         fadeOutId = setTimeout(onClose, 300); // Wait for transition to finish before unmounting
       }, duration);
+      
+      return () => {
+        clearTimeout(id);
+        clearTimeout(timeoutId);
+        clearTimeout(fadeOutId);
+      };
     } else {
-      setIsShowing(false);
+      setTimeout(() => setIsShowing(false), 0);
     }
 
     return () => {

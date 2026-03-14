@@ -14,7 +14,12 @@ export async function updateProfile(formData: FormData) {
   const fullName = formData.get('fullName') as string;
   const baseCurrency = formData.get('baseCurrency') as string;
 
-  const updates: any = {
+  const updates: {
+    phone?: string;
+    timezone?: string;
+    base_currency?: string;
+    full_name?: string;
+  } = {
     phone,
     timezone,
     base_currency: baseCurrency,

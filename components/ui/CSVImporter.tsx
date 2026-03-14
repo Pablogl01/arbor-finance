@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Upload, FileText, Check, AlertCircle } from 'lucide-react';
 
 interface CSVImporterProps {
-    onImport: (data: any[]) => void;
+    onImport: (data: unknown[]) => void;
     isOpen: boolean;
     onClose: () => void;
 }
@@ -38,7 +38,7 @@ export default function CSVImporter({ onImport, isOpen, onClose }: CSVImporterPr
                         </div>
                         <p className="text-sm font-bold text-arbor-text mb-1">Upload your bank extract</p>
                         <p className="text-xs text-arbor-textmuted mb-6 text-center max-w-[280px]">
-                            Support for CSV and Excel files. We'll help you map the columns in the next step.
+                            We&apos;ll help you map the columns in the next step.
                         </p>
                         <label className="cursor-pointer rounded-xl bg-arbor-green px-6 py-3 text-sm font-bold text-white shadow-soft transition-opacity hover:opacity-90">
                             Browse Files

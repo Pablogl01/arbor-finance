@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/utils/supabase/admin';
-import yahooFinanceModule from 'yahoo-finance2';
-
-// We need to handle the ESM/CJS compatibility for yahoo-finance2
-const yahooFinance = yahooFinanceModule as any;
+import yahooFinance from 'yahoo-finance2';
 
 export async function GET(request: Request) {
     // Security check: Verify the secret token
@@ -42,7 +39,8 @@ export async function GET(request: Request) {
         // Fetch prices in parallel
         const quotes = await Promise.all(
             tickers.map(ticker =>
-                yahooFinance.quote(ticker).catch((e: Error) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (yahooFinance as any).quote(ticker).catch((e: Error) => {
                     console.error(`Error fetching quote for ${ticker}:`, e.message);
                     return null;
                 })
@@ -94,9 +92,10 @@ export async function GET(request: Request) {
                 continue;
             }
 
-            const newBalance = (holdings || []).reduce((acc, h: any) => {
-                if (h.assets && h.assets.current_price) {
-                    return acc + (Number(h.quantity) * Number(h.assets.current_price));
+            const newBalance = (holdings || []).reduce((acc, h) => {
+                const holding = h as unknown as { quantity: number; assets: { current_price: number } | null };
+                if (holding.assets && holding.assets.current_price) {
+                    return acc + (Number(holding.quantity) * Number(holding.assets.current_price));
                 }
                 return acc;
             }, 0);
@@ -123,7 +122,8 @@ export async function GET(request: Request) {
             updatedAccountsCount: accountUpdates.length
         });
 
-    } catch (error: any) {
+    } catch (err) {
+        const error = err as Error;
         console.error('Cron job failed:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }

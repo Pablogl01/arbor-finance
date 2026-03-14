@@ -1,0 +1,142 @@
+﻿
+> arbor-finance@0.1.0 lint
+> eslint
+
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\api\assets\quote\route.ts
+   3:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\api\assets\search\route.ts
+   3:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  17:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:82  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\api\cron\update-prices\route.ts
+    6:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   97:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  126:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\auth\login\page.tsx
+  5:36  warning  'Chrome' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\profile\ProfileForm.tsx
+   51:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\profile\ProfileForm.tsx:51:5
+  49 |   // Sync state if server data changes (e.g. after successful revalidation)
+  50 |   useEffect(() => {
+> 51 |     setFormDataState({ fullName, phone, timezone, baseCurrency });
+     |     ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  52 |   }, [fullName, phone, timezone, baseCurrency]);
+  53 |
+  54 |   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {  react-hooks/set-state-in-effect
+  119:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  518:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @next/next/no-img-element
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\profile\actions.ts
+  17:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\profile\page.tsx
+  2:34   warning  'Bell' is defined but never used            @typescript-eslint/no-unused-vars
+  2:40   warning  'Edit2' is defined but never used           @typescript-eslint/no-unused-vars
+  2:47   warning  'Lock' is defined but never used            @typescript-eslint/no-unused-vars
+  2:65   warning  'SettingsIcon' is defined but never used    @typescript-eslint/no-unused-vars
+  2:79   warning  'Link2' is defined but never used           @typescript-eslint/no-unused-vars
+  2:86   warning  'Check' is defined but never used           @typescript-eslint/no-unused-vars
+  2:93   warning  'RefreshCw' is defined but never used       @typescript-eslint/no-unused-vars
+  2:104  warning  'Trash2' is defined but never used          @typescript-eslint/no-unused-vars
+  2:112  warning  'Plus' is defined but never used            @typescript-eslint/no-unused-vars
+  5:8    warning  'Image' is defined but never used           @typescript-eslint/no-unused-vars
+  6:10   warning  'revalidatePath' is defined but never used  @typescript-eslint/no-unused-vars
+  8:10   warning  'updateProfile' is defined but never used   @typescript-eslint/no-unused-vars
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\dashboard\AllocationChart.tsx
+  50:74  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:74  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\dashboard\PerformanceChart.tsx
+   47:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\layout\Header.tsx
+  11:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\AccountModal.tsx
+   11:3   warning  'MonitorPlay' is defined but never used              @typescript-eslint/no-unused-vars
+   25:45  warning  'detailsLoading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   56:40  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  110:19  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  171:19  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  280:99  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  385:99  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\AssetModal.tsx
+  46:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  74:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\CSVImporter.tsx
+   4:28  warning  'Check' is defined but never used                                @typescript-eslint/no-unused-vars
+   4:35  warning  'AlertCircle' is defined but never used                          @typescript-eslint/no-unused-vars
+   7:22  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  12:39  warning  'onImport' is defined but never used                             @typescript-eslint/no-unused-vars
+  41:64  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\InvestmentModal.tsx
+    1:31  warning  'useCallback' is defined but never used   @typescript-eslint/no-unused-vars
+   59:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:35  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:54  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:54  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  162:43  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  211:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\Toast.tsx
+  21:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\Toast.tsx:21:7
+  19 |
+  20 |     if (isVisible) {
+> 21 |       setIsShowing(true);
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |       // Automatically hide after duration
+  23 |       timeoutId = setTimeout(() => {
+  24 |         setIsShowing(false);  react-hooks/set-state-in-effect
+
+C:\Users\pablo\Desarrollo\arbor-finance\hooks\useAccounts.ts
+  10:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\hooks\useAssets.ts
+  69:13  warning  'assetName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  69:24  warning  'assetType' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\pablo\Desarrollo\arbor-finance\hooks\useNetWorthHistory.ts
+   36:22  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+   46:21  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  129:17  warning  'monthStart' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\pablo\Desarrollo\arbor-finance\modules\accounts\application\ProcessRecurringWorker.ts
+  33:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\modules\assets\application\RebalanceUseCase.ts
+  1:10  warning  'Account' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\pablo\Desarrollo\arbor-finance\test_db.ts
+  10:9  warning  'accountId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+Ô£û 63 problems (38 errors, 25 warnings)
+

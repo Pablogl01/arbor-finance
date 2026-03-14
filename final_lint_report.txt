@@ -1,0 +1,94 @@
+﻿
+> arbor-finance@0.1.0 lint
+> eslint
+
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\api\assets\quote\route.ts
+  13:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\api\assets\search\route.ts
+  13:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\api\cron\update-prices\route.ts
+  42:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\auth\login\page.tsx
+  5:36  warning  'Chrome' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\pablo\Desarrollo\arbor-finance\app\profile\ProfileForm.tsx
+  520:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\dashboard\AllocationChart.tsx
+  50:74  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:74  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\dashboard\PerformanceChart.tsx
+   47:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\layout\Header.tsx
+  11:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\AccountModal.tsx
+   11:3   warning  'MonitorPlay' is defined but never used              @typescript-eslint/no-unused-vars
+   25:45  warning  'detailsLoading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   56:40  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  110:19  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  171:19  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  280:99  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  385:99  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\AssetModal.tsx
+  46:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  74:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\CSVImporter.tsx
+   4:28  warning  'Check' is defined but never used         @typescript-eslint/no-unused-vars
+   4:35  warning  'AlertCircle' is defined but never used   @typescript-eslint/no-unused-vars
+   7:22  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:39  warning  'onImport' is defined but never used      @typescript-eslint/no-unused-vars
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\InvestmentModal.tsx
+    1:31  warning  'useCallback' is defined but never used   @typescript-eslint/no-unused-vars
+   59:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:35  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:54  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:54  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  162:43  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  211:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\Toast.tsx
+  36:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\pablo\Desarrollo\arbor-finance\components\ui\Toast.tsx:36:7
+  34 |       };
+  35 |     } else {
+> 36 |       setIsShowing(false);
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  37 |     }
+  38 |
+  39 |     return () => {  react-hooks/set-state-in-effect
+
+C:\Users\pablo\Desarrollo\arbor-finance\hooks\useAssets.ts
+  69:13  warning  'assetName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  69:24  warning  'assetType' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\pablo\Desarrollo\arbor-finance\modules\accounts\application\ProcessRecurringWorker.ts
+  33:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\pablo\Desarrollo\arbor-finance\modules\assets\application\RebalanceUseCase.ts
+  1:10  warning  'Account' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\pablo\Desarrollo\arbor-finance\test_db.ts
+  10:9  warning  'accountId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+Ô£û 38 problems (26 errors, 12 warnings)
+
