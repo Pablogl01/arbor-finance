@@ -121,8 +121,9 @@ export default function AssetModal({ isOpen, onClose, assetName, assetTicker, ac
   const { holdings, trade, refresh } = usePortfolio(accountId);
 
   const [timeframe, setTimeframe] = useState('1M');
-  const [tradeAction, setTradeAction] = useState<'buy' | 'sell'>('buy');
+  const [tradeAction, setTradeAction] = useState<'buy' | 'sell' | 'adjust'>('buy');
   const [amount, setAmount] = useState('');
+  const [targetBalance, setTargetBalance] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Get current asset details
@@ -134,24 +135,52 @@ export default function AssetModal({ isOpen, onClose, assetName, assetTicker, ac
   if (!isOpen) return null;
 
   const currentPrice = asset?.currentPrice || 0;
-  const quantity = Number(amount) || 0;
-  const totalValue = currentPrice * quantity;
-
+  
   const handleTrade = async () => {
-    if (!accountId || !assetTicker || !amount || !currentPrice) return;
+    if (!accountId || !assetTicker || !currentPrice) return;
+    
     try {
       setIsSubmitting(true);
+      
+      let finalType: 'buy' | 'sell' = tradeAction as 'buy' | 'sell';
+      let finalQuantity = 0;
+
+      if (tradeAction === 'adjust') {
+        const target = Number(targetBalance.replace(',', '.'));
+        if (isNaN(target)) throw new Error("Saldo inválido");
+        
+        const currentQty = holding?.quantity || 0;
+        const targetQty = target / currentPrice;
+        const diffQty = targetQty - currentQty;
+
+        if (Math.abs(diffQty) < 0.00000001) {
+          onClose();
+          return;
+        }
+
+        finalType = diffQty > 0 ? 'buy' : 'sell';
+        finalQuantity = Math.abs(diffQty);
+      } else {
+        if (!amount) return;
+        finalQuantity = Number(amount.replace(',', '.'));
+        finalType = tradeAction;
+      }
+
       await trade({
         accountId,
         assetTicker,
-        type: tradeAction,
-        quantity: tradeAction === 'buy' ? Number(amount) : -Number(amount),
+        type: finalType,
+        quantity: finalQuantity, // Always positive, the trigger handles the math
         price: currentPrice
       });
+      
       setAmount('');
+      setTargetBalance('');
       refresh();
-    } catch (err) {
+      onClose();
+    } catch (err: any) {
       console.error(err);
+      alert("Error: " + (err.message || "No se pudo procesar la operación"));
     } finally {
       setIsSubmitting(false);
     }
@@ -166,6 +195,10 @@ export default function AssetModal({ isOpen, onClose, assetName, assetTicker, ac
   const unrealizedPLPercentage = holding && holding.averageCost > 0 
     ? (unrealizedPL / (holding.quantity * holding.averageCost)) * 100 
     : 0;
+
+  const totalValue = tradeAction === 'adjust' 
+    ? (Number(targetBalance.replace(',', '.')) || 0)
+    : (currentPrice * (Number(amount.replace(',', '.')) || 0));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 sm:p-6">
@@ -311,25 +344,57 @@ export default function AssetModal({ isOpen, onClose, assetName, assetTicker, ac
                   >
                     Vender
                   </button>
+                  <button 
+                    onClick={() => setTradeAction('adjust')}
+                    className={`flex-1 py-2 text-sm font-bold transition-all ${
+                      tradeAction === 'adjust'
+                        ? 'border-b-2 border-arbor-green text-arbor-green'
+                        : 'text-slate-400 hover:text-arbor-text'
+                    }`}
+                  >
+                    Ajustar
+                  </button>
                 </div>
 
                 {/* Form Body */}
                 <div className="p-4 flex flex-col gap-3">
-                  <div>
-                    <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                      Cantidad ({assetTicker})
-                    </label>
-                    <div className="relative">
-                      <input 
-                        type="number" 
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="0.00" 
-                        className="w-full rounded-lg bg-[#F8FAF9] px-3.5 py-2.5 text-sm font-bold text-arbor-text outline-none focus:ring-2 focus:ring-arbor-mint/50 transition-all placeholder:text-slate-400"
-                      />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">{assetTicker}</span>
+                  {tradeAction === 'adjust' ? (
+                    <div>
+                      <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        Nuevo Saldo Total (EUR)
+                      </label>
+                      <div className="relative">
+                        <input 
+                          type="text" 
+                          inputMode="decimal"
+                          value={targetBalance}
+                          onChange={(e) => setTargetBalance(e.target.value)}
+                          placeholder="0.00" 
+                          className="w-full rounded-lg bg-[#F8FAF9] px-3.5 py-2.5 text-sm font-bold text-arbor-text outline-none focus:ring-2 focus:ring-arbor-mint/50 transition-all placeholder:text-slate-400"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">EUR</span>
+                      </div>
+                      <p className="mt-2 text-[9px] text-slate-400 italic">
+                        El sistema generará una transacción de corrección para igualar este saldo.
+                      </p>
                     </div>
-                  </div>
+                  ) : (
+                    <div>
+                      <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        Cantidad ({assetTicker})
+                      </label>
+                      <div className="relative">
+                        <input 
+                          type="number" 
+                          value={amount}
+                          onChange={(e) => setAmount(e.target.value)}
+                          placeholder="0.00" 
+                          className="w-full rounded-lg bg-[#F8FAF9] px-3.5 py-2.5 text-sm font-bold text-arbor-text outline-none focus:ring-2 focus:ring-arbor-mint/50 transition-all placeholder:text-slate-400"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">{assetTicker}</span>
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-500">
@@ -342,16 +407,22 @@ export default function AssetModal({ isOpen, onClose, assetName, assetTicker, ac
                   </div>
 
                   <div className="flex justify-between items-center mt-2">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Est.</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      {tradeAction === 'adjust' ? 'Saldo Objetivo' : 'Total Est.'}
+                    </span>
                     <span className="text-sm font-bold text-arbor-text">{formatCurrency(totalValue)}</span>
                   </div>
 
                   <button 
                     onClick={handleTrade}
-                    disabled={isSubmitting || !amount || Number(amount) <= 0}
+                    disabled={isSubmitting || (tradeAction !== 'adjust' && (!amount || Number(amount) <= 0)) || (tradeAction === 'adjust' && !targetBalance)}
                     className="mt-1 w-full rounded-lg bg-arbor-green py-3 text-sm font-bold text-white transition-all hover:bg-[#043020] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isSubmitting ? 'Procesando...' : (tradeAction === 'buy' ? `Comprar ${assetTicker}` : `Vender ${assetTicker}`)}
+                    {isSubmitting ? 'Procesando...' : (
+                      tradeAction === 'buy' ? `Comprar ${assetTicker}` : 
+                      tradeAction === 'sell' ? `Vender ${assetTicker}` : 
+                      `Confirmar Ajuste`
+                    )}
                   </button>
                 </div>
               </div>
