@@ -31,6 +31,7 @@ interface AssetModalProps {
   assetName?: string;
   assetTicker?: string;
   accountId: string | null;
+  onTrade?: () => void;
 }
 
 // Chart Data Configuration (Moved outside to prevent re-render lag)
@@ -116,7 +117,7 @@ const chartOptions = {
   },
 };
 
-export default function AssetModal({ isOpen, onClose, assetName, assetTicker, accountId }: AssetModalProps) {
+export default function AssetModal({ isOpen, onClose, assetName, assetTicker, accountId, onTrade }: AssetModalProps) {
   const { assets } = useAssets();
   const { holdings, trade, refresh } = usePortfolio(accountId);
 
@@ -177,6 +178,7 @@ export default function AssetModal({ isOpen, onClose, assetName, assetTicker, ac
       setAmount('');
       setTargetBalance('');
       refresh();
+      if (onTrade) onTrade();
       onClose();
     } catch (err: any) {
       console.error(err);

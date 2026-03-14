@@ -182,6 +182,7 @@ export default function SummaryCards() {
         isOpen={isInvestmentModalOpen}
         onClose={() => setIsInvestmentModalOpen(false)}
         accountId={selectedAccountId}
+        onTrade={refresh}
       />
     </>
   );

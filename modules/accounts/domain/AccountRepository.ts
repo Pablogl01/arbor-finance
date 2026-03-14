@@ -9,4 +9,5 @@ export interface AccountRepository {
   createRecurringTransaction(transaction: Omit<RecurringTransaction, 'id'>): Promise<RecurringTransaction>;
   updateRecurringTransaction(id: string, transaction: Partial<Omit<RecurringTransaction, 'id' | 'accountId'>>): Promise<RecurringTransaction>;
   deleteTransaction(transactionId: string): Promise<void>;
+  updateBalanceCache(accountId: string): Promise<void>;
 }

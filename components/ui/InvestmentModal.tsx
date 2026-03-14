@@ -33,6 +33,7 @@ interface InvestmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   accountId: string | null;
+  onTrade?: () => void;
 }
 
 // Chart Data Configuration (Keep mostly static for mockup unless we want to map history)
@@ -118,7 +119,7 @@ const chartOptions: any = {
   },
 };
 
-export default function InvestmentModal({ isOpen, onClose, accountId }: InvestmentModalProps) {
+export default function InvestmentModal({ isOpen, onClose, accountId, onTrade }: InvestmentModalProps) {
   const { assets, refresh: refreshAssets } = useAssets();
   const { holdings, trade, refresh: refreshPortfolio } = usePortfolio(accountId);
   
@@ -208,6 +209,7 @@ export default function InvestmentModal({ isOpen, onClose, accountId }: Investme
       setInvestAmount('');
       await refreshAssets();
       await refreshPortfolio();
+      if (onTrade) onTrade();
     } catch (err: any) {
       console.error(err);
       alert("Error al guardar: " + (err.message || "Error desconocido"));
@@ -509,6 +511,7 @@ export default function InvestmentModal({ isOpen, onClose, accountId }: Investme
         assetName={selectedAssetDetail?.name}
         assetTicker={selectedAssetDetail?.ticker}
         accountId={accountId}
+        onTrade={onTrade}
       />
     </>
   );
