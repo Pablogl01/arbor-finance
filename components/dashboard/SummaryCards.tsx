@@ -69,8 +69,13 @@ function SummaryCard({ title, amount, change, changeAmount, isMain = false, onCl
   );
 }
 
-export default function SummaryCards() {
-  const { accounts, loading, refresh } = useAccounts();
+interface SummaryCardsProps {
+  accounts: any[];
+  loading: boolean;
+  refresh: () => Promise<void>;
+}
+
+export default function SummaryCards({ accounts, loading, refresh }: SummaryCardsProps) {
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [isInvestmentModalOpen, setIsInvestmentModalOpen] = useState(false);
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);

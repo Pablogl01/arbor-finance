@@ -73,23 +73,20 @@ export class SupabaseAssetRepository implements AssetRepository {
 
     if (error) throw error;
 
-    // 3. Recalculate account balance_cache
-    const { data: holdings, error: holdingsError } = await this.supabase
-      .from('user_assets')
-      .select(`
-        quantity,
-        assets (current_price)
-      `)
-      .eq('account_id', transaction.accountId);
+    // 3. Update account balance_cache (additive logic)
+    const { data: accData } = await this.supabase
+      .from('accounts')
+      .select('balance_cache')
+      .eq('id', transaction.accountId)
+      .single();
 
-    if (!holdingsError && holdings) {
-      const newBalance = holdings.reduce((acc, h) => {
-        const holding = h as unknown as { quantity: number; assets: { current_price: number } | null };
-        if (holding.assets && holding.assets.current_price) {
-          return acc + (Number(holding.quantity) * Number(holding.assets.current_price));
-        }
-        return acc;
-      }, 0);
+    if (accData) {
+      const currentBalance = Number(accData.balance_cache);
+      const tradeValue = Number(transaction.quantity) * Number(transaction.price);
+      
+      const newBalance = transaction.type === 'buy' 
+        ? currentBalance + tradeValue 
+        : currentBalance - tradeValue;
 
       await this.supabase
         .from('accounts')

@@ -1,10 +1,15 @@
+'use client'
+
 import Header from '@/components/layout/Header';
 import SummaryCards from '@/components/dashboard/SummaryCards';
 import PerformanceChart from '@/components/dashboard/PerformanceChart';
 import InvestmentMonitor from '@/components/dashboard/InvestmentMonitor';
 import AllocationChart from '@/components/dashboard/AllocationChart';
+import { useAccounts } from '@/hooks/useAccounts';
 
 export default function Home() {
+  const accountState = useAccounts();
+
   return (
     <div className="flex min-h-screen flex-col bg-arbor-bg font-sans">
       <Header />
@@ -14,7 +19,11 @@ export default function Home() {
 
         {/* Full Width Grid */}
         <div className="flex flex-1 flex-col gap-8">
-          <SummaryCards />
+          <SummaryCards 
+            accounts={accountState.accounts}
+            loading={accountState.loading}
+            refresh={accountState.refresh}
+          />
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Chart Section - Takes 2 columns on large screens */}
@@ -32,7 +41,11 @@ export default function Home() {
 
           {/* Investment List - Full Width */}
           <section>
-            <InvestmentMonitor />
+            <InvestmentMonitor 
+              accounts={accountState.accounts}
+              loading={accountState.loading}
+              refresh={accountState.refresh}
+            />
           </section>
         </div>
 

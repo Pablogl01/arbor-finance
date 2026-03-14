@@ -70,8 +70,13 @@ function AssetRow({
   );
 }
 
-export default function InvestmentMonitor() {
-  const { accounts, loading: accountsLoading } = useAccounts();
+interface InvestmentMonitorProps {
+  accounts: any[];
+  loading: boolean;
+  refresh: () => Promise<void>;
+}
+
+export default function InvestmentMonitor({ accounts, loading: accountsLoading, refresh }: InvestmentMonitorProps) {
   const { assets, loading: assetsLoading } = useAssets();
 
   // Find the first investment account to show on dashboard
@@ -154,6 +159,7 @@ export default function InvestmentMonitor() {
         assetName={selectedAsset?.name}
         assetTicker={selectedAsset?.ticker}
         accountId={investmentAccount?.id || null}
+        onTrade={refresh}
       />
     </>
   );
