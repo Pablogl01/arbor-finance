@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import yahooFinance from 'yahoo-finance2';
 
+const yf = new (yahooFinance as any)();
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
@@ -11,7 +13,7 @@ export async function GET(request: Request) {
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const results = await (yahooFinance as any).search(query, {
+    const results = await yf.search(query, {
       quotesCount: 10,
       newsCount: 0,
     }, { validateResult: false });

@@ -5,6 +5,8 @@ import yahooFinance from 'yahoo-finance2';
 // Force dynamic rendering to prevent Next.js from caching this GET request
 export const dynamic = 'force-dynamic';
 
+const yf = new (yahooFinance as any)();
+
 export async function GET(request: Request) {
     // Security check: Verify the secret token
     const { searchParams } = new URL(request.url);
@@ -47,7 +49,7 @@ export async function GET(request: Request) {
             tickers.map(async (ticker) => {
                 try {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const q = await (yahooFinance as any).quote(ticker);
+                    const q = await yf.quote(ticker);
                     return { ticker, quote: q, success: true };
                 } catch (e: any) {
                     console.error(`Error fetching quote for ticker "${ticker}":`, e.message);

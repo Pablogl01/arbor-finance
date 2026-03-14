@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import yahooFinance from 'yahoo-finance2';
 
+const yf = new (yahooFinance as any)();
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const ticker = searchParams.get('ticker');
@@ -11,7 +13,7 @@ export async function GET(request: Request) {
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const quote = await (yahooFinance as any).quote(ticker);
+    const quote = await yf.quote(ticker);
     
     return NextResponse.json({ 
       ticker: quote.symbol,
