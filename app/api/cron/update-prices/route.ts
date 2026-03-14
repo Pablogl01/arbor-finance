@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         console.log('1. Fetching assets from database...');
         const { data: assetsToUpdate, error: assetsError } = await supabase
             .from('assets')
-            .select('ticker');
+            .select('ticker, name, type'); // Fetch name and type to satisfy NOT NULL constraints on upsert
 
         if (assetsError) {
             console.error('CRITICAL: Error fetching assets from Supabase:', assetsError);
@@ -63,10 +63,16 @@ export async function GET(request: Request) {
         
         for (const item of fetchResults) {
             const { ticker, quote, success, error } = item;
+            
+            // Find the original asset to get name and type
+            const originalAsset = assetsToUpdate.find(a => a.ticker === ticker);
+
             if (success && quote && quote.regularMarketPrice !== undefined) {
                 console.log(`- Fetch OK: ${ticker} = ${quote.regularMarketPrice}`);
                 updatedAssets.push({
                     ticker: ticker,
+                    name: originalAsset?.name || ticker, // Required field
+                    type: originalAsset?.type || 'ETF', // Required field
                     current_price: quote.regularMarketPrice,
                     last_updated: new Date().toISOString()
                 });
